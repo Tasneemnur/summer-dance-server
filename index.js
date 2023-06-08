@@ -75,6 +75,16 @@ async function run() {
       const result = await userCollection.updateOne(filter, updateUser);
       res.send(result);
     })
+    app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      if (req.decoded.email !== email) {
+        res.send({ admin: false })
+      }
+      const query = { email: email }
+      const user = await userCollection.findOne(query);
+      const result = { instructor: user?.role === 'instructor' }
+      res.send(result);
+    })
     app.get('/users/admin/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       if (req.decoded.email !== email) {
@@ -82,7 +92,6 @@ async function run() {
       }
       const query = { email: email }
       const user = await userCollection.findOne(query);
-      console.log(user)
       const result = { admin: user?.role === 'admin' }
       res.send(result);
     })
