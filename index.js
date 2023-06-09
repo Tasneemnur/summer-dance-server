@@ -55,6 +55,11 @@ async function run() {
       const result = await classCollection.insertOne(DanceClass);
       res.send(result);
     });
+
+    app.get('/classes', verifyJWT, async(req, res) => {
+      const result = await classCollection.find().toArray();
+      res.send(result)
+    })
     
     app.get('/users', verifyJWT, async(req, res) => {
       const result = await userCollection.find().toArray();
