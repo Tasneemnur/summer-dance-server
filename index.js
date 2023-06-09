@@ -24,8 +24,6 @@ const verifyJWT = (req, res, next) => {
   })
 }
 
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9iyox0a.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -56,12 +54,58 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/classes', verifyJWT, async(req, res) => {
+    app.get('/classes', async(req, res) => {
       const result = await classCollection.find().toArray();
       res.send(result)
     })
+    app.get("/classes/:id", async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id)}
+      const result = await classCollection.findOne(query);
+      res.send(result)
+    })
+    app.patch('/classes/approved/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateClass = {
+        $set: {
+          status: "Approved"
+        },
+      };
+      const result = await classCollection.updateOne(filter, updateClass);
+      res.send(result);
+    })
+    app.patch('/classes/denied/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateClass = {
+        $set: {
+          status: "Denied"
+        },
+      };
+      const result = await classCollection.updateOne(filter, updateClass);
+      res.send(result);
+    })
+
+    app.patch('/classes/:id', async(req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const feedback = req.body;
+      console.log(feedback)
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateClass = {
+        $set: {
+          feedback: feedback
+        }
+      };
+      const result = await classCollection.updateOne(filter, updateClass, options);
+      res.send(result);
+    })
     
+
     app.get('/users', verifyJWT, async(req, res) => {
+      
       const result = await userCollection.find().toArray();
       res.send(result)
     })
