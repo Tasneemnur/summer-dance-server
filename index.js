@@ -108,9 +108,12 @@ async function run() {
     })
     
 
-    app.get('/users', verifyJWT, async(req, res) => {
-
-      const result = await userCollection.find().toArray();
+    app.get('/users', async(req, res) => {
+      let query = {} 
+      if(req.query?.role){
+        query = {role: req.query.role}
+      }
+      const result = await userCollection.find(query).toArray();
       res.send(result)
     })
     app.post('/users', async(req, res) => {
