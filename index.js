@@ -38,7 +38,8 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
-  const userCollection = client.db("danceClassDB").collection("users")
+  const userCollection = client.db("danceClassDB").collection("users");
+  const classCollection = client.db("danceClassDB").collection("classes");
   try {
     await client.connect();
 
@@ -49,7 +50,12 @@ async function run() {
       res.send(token)
     })
 
-
+    app.post("/classes", async (req, res) => {
+      const DanceClass = req.body;
+      const result = await classCollection.insertOne(DanceClass);
+      res.send(result);
+    });
+    
     app.get('/users', verifyJWT, async(req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result)
