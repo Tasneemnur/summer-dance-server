@@ -55,7 +55,11 @@ async function run() {
     });
 
     app.get('/classes', async(req, res) => {
-      const result = await classCollection.find().toArray();
+      let query = {} 
+      if(req.query?.status){
+        query = {status: req.query.status}
+      }
+      const result = await classCollection.find(query).toArray();
       res.send(result)
     })
     app.get("/classes/:id", async(req, res) => {
@@ -105,7 +109,7 @@ async function run() {
     
 
     app.get('/users', verifyJWT, async(req, res) => {
-      
+
       const result = await userCollection.find().toArray();
       res.send(result)
     })
