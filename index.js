@@ -38,6 +38,7 @@ const client = new MongoClient(uri, {
 async function run() {
   const userCollection = client.db("danceClassDB").collection("users");
   const classCollection = client.db("danceClassDB").collection("classes");
+  const cartCollection = client.db("danceClassDB").collection("carts");
   try {
     await client.connect();
 
@@ -46,6 +47,12 @@ async function run() {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn:'1h' })
       res.send(token)
+    })
+
+    app.post('/carts', async (req, res) => {
+      const storedClass = req.body;
+      const result = await cartCollection.insertOne(storedClass);
+      res.send(result);
     })
 
     app.post("/classes", async (req, res) => {
@@ -93,9 +100,7 @@ async function run() {
 
     app.patch('/classes/:id', async(req, res) => {
       const id = req.params.id;
-      console.log(id)
-      const feedback = req.body;
-      console.log(feedback)
+      const feedback = req.body.feedback;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const updateClass = {
