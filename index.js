@@ -49,10 +49,26 @@ async function run() {
       res.send(token)
     })
 
-    app.post('/carts', async (req, res) => {
+    app.get('/carts', async(req, res) => {
+      let query = {};
+      if(req.query?.email){
+        query = {email: req.query.email}
+      }
+      const result = await cartCollection.find(query).toArray();
+      res.send(result)
+    })
+
+    app.post('/carts', async(req, res) => {
       const storedClass = req.body;
       const result = await cartCollection.insertOne(storedClass);
       res.send(result);
+    })
+
+    app.delete('/carts/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await cartCollection.deleteOne(query);
+      res.send(result)
     })
 
     app.post("/classes", async (req, res) => {
