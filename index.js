@@ -97,6 +97,9 @@ async function run() {
       if (req.query?.status) {
         query = { status: req.query.status };
       }
+      if (req.query?.email) {
+        query = { instructorEmail: req.query.email };
+      }
       const result = await classCollection.find(query).toArray();
       res.send(result);
     });
