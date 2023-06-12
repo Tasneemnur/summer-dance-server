@@ -48,7 +48,7 @@ async function run() {
   const cartCollection = client.db("danceClassDB").collection("carts");
   const paymentCollection = client.db("danceClassDB").collection("payments");
   try {
-    await client.connect();
+    // await client.connect();
 
     app.post("/jwt", (req, res) => {
       const user = req.body;
@@ -100,7 +100,7 @@ async function run() {
       if (req.query?.email) {
         query = { instructorEmail: req.query.email };
       }
-      const result = await classCollection.find(query).toArray();
+      const result = await classCollection.find(query).sort({ enrolled: -1 }).toArray();
       res.send(result);
     });
     app.get("/classes/:id", async (req, res) => {
@@ -231,7 +231,7 @@ async function run() {
       if (req.query?.email) {
         query = { email: req.query.email };
       }
-      const result = await paymentCollection.find(query).toArray();
+      const result = await paymentCollection.find(query).sort({ date: -1 }).toArray();
       res.send(result);
     });
     
